@@ -4,41 +4,46 @@ public class OutPut {
     private static PersonList personList = PersonList.getPersonList();
     private static CourseList courseList = CourseList.getCourse_List();
     private static String errorOut = "Input illegal.";
-    public static void addPerson(String Choice[]){
-        if (Choice.length != 5) System.out.println("Input illegal.");
+    public static void addPerson(String Choice[]) {
+        if (Choice.length != 5) {
+            System.out.println(errorOut);
+        }
         else {
-            int Flag = 0;
-            if (Choice[1].equals("-t")) Flag = personList.Add(Choice[2],Choice[3], Choice[4], 1);
-            else if (Choice[1].equals("-s")) Flag = personList.Add(Choice[2], Choice[3], Choice[4], 0);
-            else System.out.println(errorOut);
-            if (Flag == 1) System.out.println("ID illegal.");
-            else if (Flag == 2) System.out.println("ID exists.");
-            else if (Flag == 3) System.out.println("Name illegal.");
-            else if (Flag == 41) System.out.println("TID illegal.");
-            else if (Flag == 40) System.out.println("SID illegal.");
-            else if (Flag == 51) System.out.println("TID exists.");
-            else if (Flag == 50) System.out.println("SID exists.");
-            else if (Flag == 61) {
-                System.out.println("Add teacher success.");
-                int len = personList.getPersonnelList().size();
-                Teacher teacher = (Teacher) personList.getPersonnelList().get(len-1);
-                List<Course> list = courseList.getList();
-                for (Course test : list) {
-                    if (test.IfTeach(Choice[4])) {
-                        teacher.getTeachingCourse().add(test);
+            if (Choice[1].equals("-t")) {
+                try {
+                    personList.Add(Choice[2], Choice[3], Choice[4], 1);
+                    System.out.println("Add teacher success.");
+                    int len = personList.getPersonnelList().size();
+                    Teacher teacher = (Teacher) personList.getPersonnelList().get(len-1);
+                    List<Course> list = courseList.getList();
+                    for (Course test : list) {
+                        if (test.IfTeach(Choice[4])) {
+                            teacher.getTeachingCourse().add(test);
+                        }
                     }
+                }catch (WrongInputException e) {
+                    System.out.println(e.getMessage());
                 }
             }
-            else if (Flag == 60) System.out.println("Add student success.");
+            else if (Choice[1].equals("-s")) {
+                try {
+                    personList.Add(Choice[2], Choice[3], Choice[4], 0);
+                    System.out.println("Add student success.");
+                }catch (WrongInputException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            else System.out.println(errorOut);
         }
     }
 
     public static void addCourse(String Choice[]) {
         if (Choice.length != 6) System.out.println(errorOut);
         else {
-            Course flag = courseList.getCourseById(Choice[1]);
-            if (flag != null) System.out.println("Course exists.");
-            else {
+            try {
+                courseList.getCourseById(Choice[1]);
+                System.out.println("Course exists.");
+            }catch (WrongInputException e) {
                 Course course = new Course();
                 boolean fg = course.CheckNum(Choice[4]) && course.CheckTeacherName(Choice[3]) && course.CheckCourseName(Choice[2]) && course.CheckCid(Choice[1]) && course.CheckTime(Choice[5]);
                 if (fg) {
@@ -54,39 +59,47 @@ public class OutPut {
                 else {
                     if(!course.CheckTeacherName(Choice[3])) {
                         String regex = "^\\[.*\\]$";
-                        if (Choice[3].matches(regex)) System.out.println("Course add illegal.");
-                        else System.out.println(errorOut);
+                        if (!(Choice[3].matches(regex))) {
+                            System.out.println(errorOut);
+                            return;
+                        }
                     }
-                    else if (!course.CheckNum(Choice[4])) {
+                    if (!course.CheckNum(Choice[4])) {
                         String regex = "^-\\d+$";
-                        if (Choice[4].matches(regex)) System.out.println("Course add illegal.");
-                        else System.out.println(errorOut);
+                        if (!(Choice[4].matches(regex))) {
+                            System.out.println(errorOut);
+                            return;
+                        }
                     }
-                    else if (!course.CheckTime(Choice[5])) {
+                    if (!course.CheckTime(Choice[5])) {
                         String regex = "^\\[\\d{1,2}-\\d{1,2}\\]\\d,\\d{1,2}$";
-                        if (Choice[5].matches(regex)) System.out.println("Course add illegal.");
-                        else System.out.println(errorOut);
+                        if (!(Choice[5].matches(regex))) {
+                            System.out.println(errorOut);
+                            return;
+                        }
                     }
-                    else System.out.println("Course add illegal.");
+                    System.out.println("Course add illegal.");
                 }
             }
         }
     }
 
     public static void modifyCourse(String Choice[]) {
-        if (Choice.length != 4) System.out.println(errorOut);
+        if (Choice.length != 4) {
+            System.out.println(errorOut);
+        }
         else {
-            Course lesson = courseList.getCourseById(Choice[1]);
-            if (lesson == null) System.out.println("Course does not exist.");
-            else {
-                boolean flag = courseList.ModifyCourse(lesson, Choice[2], Choice[3]);
-                if (flag) System.out.println("Update success.");
-                else if (Choice[2].equals("-n") || Choice[2].equals("-t")) System.out.println("Update fail.");
-                else if (Choice[2].equals("-c")) {
-                    String regex = "^-\\d+$";
-                    if (Choice[3].matches(regex)) System.out.println("Update fail.");
-                    else System.out.println(errorOut);
-                } else System.out.println(errorOut);
+            try {
+                Course lesson = courseList.getCourseById(Choice[1]);
+                try {
+                    courseList.ModifyCourse(lesson, Choice[2], Choice[3]);
+                    System.out.println("Update success.");
+                }catch (WrongInputException e) {
+                    System.out.println(e.getMessage());
+                }
+
+            }catch (WrongInputException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -104,16 +117,16 @@ public class OutPut {
     public static Person Login(String Choice[]) {
         if (Choice.length == 4 && (Choice[1].equals("-t") || Choice[1].equals("-s"))) {
             Person ans;
-            if (Choice[1].equals("-t")){
-                ans =  personList.Log(Choice[2], Choice[3], true);
-            }
-            else {
-                ans = personList.Log(Choice[2], Choice[3], false);
-            }
-            if (ans == null) System.out.println("Login Error. Your ID or password maybe wrong.");
-            else {
+            try {
+                if (Choice[1].equals("-t")) {
+                    ans = personList.Log(Choice[2], Choice[3], true);
+                } else {
+                    ans = personList.Log(Choice[2], Choice[3], false);
+                }
                 System.out.println("Login success.");
                 return ans;
+            }catch (WrongInputException e) {
+                System.out.println(e.getMessage());
             }
         }
         else System.out.println(errorOut);
@@ -160,16 +173,17 @@ public class OutPut {
             System.out.println(errorOut);
             return null;
         }
-        if (Choice[1].equals("-id")) {
+        else if (Choice[1].equals("-id")) {
             if (Choice.length != 3) {
                 System.out.println(errorOut);
                 return null;
             }
-            Course check = courseList.getCourseById(Choice[2]);
-            if (check != null) {
+            try {
+                Course check = courseList.getCourseById(Choice[2]);
                 System.out.println(check);
+            }catch (WrongInputException e) {
+                System.out.println(e.getMessage());
             }
-            else System.out.println("Course does not exist.");
             return null;
         }
         else if (Choice[1].equals("-key")) {
@@ -195,7 +209,7 @@ public class OutPut {
             if (!fg) {
                 String regex = "^-\\d+$";
                 if (Choice[2].matches(regex) && Choice[3].matches(regex)) System.out.println("Course does not exist.");
-                else System.out.println(errorOut);
+                System.out.println(errorOut);
                 return null;
             }
             return courseList.getList();
@@ -207,14 +221,12 @@ public class OutPut {
     public static List<Course> SearchMyCourse(String[] Choice, Person ans) {
         if (Choice.length != 3) {
             System.out.println(errorOut);
-            return null;
         }
         else {
             Course course = new Course();
             boolean fg = course.CheckNum(Choice[1]) && course.CheckNum(Choice[2]);
             if (!fg) {
                 System.out.println(errorOut);
-                return null;
             } else {
                 boolean test = ans instanceof Teacher;
                 if (test) {
@@ -226,65 +238,77 @@ public class OutPut {
                 }
             }
         }
+        return null;
     }
 
     public static void GetCourse(String Cid,Person person) {
         if (!(person instanceof Student)) System.out.println(errorOut);
         else {
-            Course aim = courseList.getCourseById(Cid);
-            if (aim == null) {
-                System.out.println("Course does not exist.");
-                return;
-            }
-            Student student = (Student) person;
-            List<Course> list = student.getSelectCourse();
-            for (Course test : list) {
-                if (test == aim) {
-                    System.out.println("The course has been selected.");
-                    return;
+            try {
+                Course aim = courseList.getCourseById(Cid);
+                Student student = (Student) person;
+                List<Course> list = student.getSelectCourse();
+                for (Course test : list) {
+                    if (test == aim) {
+                        System.out.println("The course has been selected.");
+                        return;
+                    }
                 }
-            }
-            for (Course course:list) {
-                if (course.CheckConflict(aim)) {
-                    System.out.println("Course time conflict.");
-                    return;
+                for (Course course:list) {
+                    if (course.CheckConflict(aim)) {
+                        System.out.println("Course time conflict.");
+                        return;
+                    }
                 }
+                if (aim.getStudentList().size() == aim.getCapacity()) System.out.println("The course is full.");
+                else {
+                    aim.getStudentList().add(student.getStudentID());
+                    student.getSelectCourse().add(aim);
+                    System.out.println("Course chosen success.");
+                }
+            }catch (WrongInputException e) {
+                System.out.println(e.getMessage());
             }
-            if (aim.getStudentList().size() == aim.getCapacity()) System.out.println("The course is full.");
-            else {
-                aim.getStudentList().add(student.getStudentID());
-                student.getSelectCourse().add(aim);
-                System.out.println("Course chosen success.");
-            }
+
         }
     }
 
     public static void DropCourse(String Cid, Person person) {
         if (!(person instanceof Student)) System.out.println(errorOut);
         else {
-            Course aim = courseList.getCourseById(Cid);
-            if (aim == null) System.out.println("Course does not exist.");
-            else {
+            try {
+                Course aim = courseList.getCourseById(Cid);
                 Student student = (Student) person;
                 List<Course> list = student.getSelectCourse();
                 for (Course test : list) {
                     if (test == aim) {
                         list.remove(test);
-                        aim.getStudentList().remove(Cid);
+                        aim.getStudentList().remove(student.getStudentID());
                         System.out.println("Drop out successful.");
                         return;
                     }
                 }
                 System.out.println("The course has not been selected.");
+            }catch (WrongInputException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
     public static boolean DropOut(String[] choice, Person ans) {
-        if (choice.length != 3 || !(ans instanceof Student)) System.out.println(errorOut);
+        if (choice.length != 3 || !(ans instanceof Student)) {
+            System.out.println(errorOut);
+            return false;
+        }
         else {
-            if (!choice[1].equals(choice[2])) System.out.println("The password you entered must be the same as the former one.");
-            else if (!choice[1].equals(ans.getPassword())) System.out.println("Password illegal.");
+            if (!choice[1].equals(choice[2])) {
+                System.out.println("The password you entered must be the same as the former one.");
+                return false;
+            }
+            else if (!choice[1].equals(ans.getPassword())) {
+                System.out.println("Password illegal.");
+                return false;
+            }
             else {
                 Student student = (Student) ans;
                 List<Course> list = student.getSelectCourse();
@@ -298,6 +322,5 @@ public class OutPut {
                 return true;
             }
         }
-        return false;
     }
 }

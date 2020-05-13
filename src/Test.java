@@ -25,9 +25,8 @@ public class Test {
                     else if (Choice[0].equals("clist")) {
                         if (Choice.length != 4) System.out.println("Input illegal.");
                         else {
-                            Course lesson = courseList.getCourseById(Choice[1]);
-                            if (lesson == null) System.out.println("Course does not exist.");
-                            else {
+                            try {
+                                Course lesson = courseList.getCourseById(Choice[1]);
                                 List<String> studentList = lesson.getStudentList();
                                 Collections.sort(studentList);
                                 Course course = new Course();
@@ -54,7 +53,10 @@ public class Test {
                                         }
                                     }
                                 }
+                            }catch (WrongInputException e) {
+                                System.out.println(e.getMessage());
                             }
+
                         }
                     }
                     else if (Content.equals("back")) break;
@@ -114,9 +116,8 @@ public class Test {
                         else if (Choice[0].equals("clist")) {
                             if (Choice.length != 4) System.out.println("Input illegal.");
                             else {
-                                Course lesson = courseList.getCourseById(Choice[1]);
-                                if (lesson == null) System.out.println("Course does not exist.");
-                                else {
+                                try {
+                                    Course lesson = courseList.getCourseById(Choice[1]);
                                     List<String> studentList = lesson.getStudentList();
                                     Collections.sort(studentList);
                                     Course course = new Course();
@@ -147,6 +148,8 @@ public class Test {
                                             }
                                         }
                                     }
+                                }catch (WrongInputException e){
+                                    System.out.println(e.getMessage());
                                 }
                             }
                         }

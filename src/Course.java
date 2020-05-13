@@ -135,7 +135,7 @@ public class Course implements Comparable<Course>{
             for(int i = 1; i < num.length; ++i) {
                 Num[i-1] = Integer.parseInt(num[i]);
             }
-            if (Num[0] <= Num[1] && Num[0] <= 18 && Num[1] <= 18 && (Num[2] <= 7 && Num[2] >= 1) && (Num[3] >= 1 && Num[3] <= 10)) return true;
+            if (Num[0] <= Num[1] && (Num[0] >= 1 && Num[0] <= 18) && (Num[1] >= 1 && Num[1] <= 18) && (Num[2] <= 7 && Num[2] >= 1) && (Num[3] >= 1 && Num[3] <= 10)) return true;
         }
         return false;
     }

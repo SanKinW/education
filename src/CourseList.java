@@ -14,12 +14,12 @@ public class CourseList {
         return courseList;
     }
 
-    public Course getCourseById(String cid) {
+    public Course getCourseById(String cid) throws WrongInputException{
         for(Course result : courseList) {
             String temp = result.getCID().toUpperCase();
             if(temp.equals(cid.toUpperCase())) return result;
         }
-        return null;
+        throw new WrongInputException("Course does not exist.");
     }
 
     public List<Course> getCourseByKeyword(String Keyword) {
@@ -33,35 +33,28 @@ public class CourseList {
         return result;
     }
 
-    public boolean AddNewCourse(String cid, String name, String teacher, String cap, String time) {
-        Course course = new Course();
-        boolean flag = course.CheckNum(cap);
-        if (flag) {
-            int Cap = Integer.parseInt(cap);
-            Course T = new Course(cid, name, teacher, Cap, time);
-            courseList.add(T);
-            return true;
-        }
-        else return false;
-    }
 
-    public boolean ModifyCourse(Course lesson, String choice, String Change) {
+    public void ModifyCourse(Course lesson, String choice, String Change) throws WrongInputException{
         if (choice.equals("-n")) {
             boolean flag = lesson.CheckCourseName(Change);
             if (flag) {
                 lesson.setCourse_Name(Change);
-                return true;
+                return;
             }
-            return false;
+            throw new WrongInputException("Update fail.");
         }
         else if (choice.equals("-c")) {
             boolean flag = lesson.CheckNum(Change);
             if (flag) {
                 int cap = Integer.parseInt(Change);
                 lesson.setCapacity(cap);
-                return true;
+                return;
             }
-            return false;
+            else {
+                String regex = "^-\\d+$";
+                if (Change.matches(regex)) throw new WrongInputException("Update fail.");
+                else throw new WrongInputException("Input illegal.");
+            }
         }
         else if (choice.equals("-t")) {
             boolean flag = lesson.CheckTeacherName(Change);
@@ -74,21 +67,12 @@ public class CourseList {
                         if (!teacher.CheckCourse(lesson))teacher.getTeachingCourse().add(lesson);
                     }
                 }
-                return true;
+                return;
             }
-            return false;
+            throw new WrongInputException("Update fail.");
         }
-        return false;
+        throw new WrongInputException("Input illegal.");
     }
 
-    public String PrintCourse(List<Course> ans, int n, int m) {
-        String result = "";
-        for(int i = n; i < m; ++i) {
-            Course temp = ans.get(i);
-            int num = i - n + 1;
-            result = result + num + "." + temp.toString() + '\n';
-        }
-        return result;
-    }
 
 }

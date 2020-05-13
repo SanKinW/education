@@ -2,6 +2,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 public class Test {
+    private static String errorOut = "Input illegal.";
+    private static String Error = "Error:";
     public static void main(String[] args) {
         CourseList courseList = CourseList.getCourse_List();
         String sign = "\\s+";
@@ -23,7 +25,7 @@ public class Test {
                         OutPut.modifyCourse(Choice);
                     }
                     else if (Choice[0].equals("clist")) {
-                        if (Choice.length != 4) System.out.println("Input illegal.");
+                        if (Choice.length != 4) System.out.println(Error + errorOut);
                         else {
                             try {
                                 Course lesson = courseList.getCourseById(Choice[1]);
@@ -31,13 +33,13 @@ public class Test {
                                 Collections.sort(studentList);
                                 Course course = new Course();
                                 boolean fg = course.CheckNum(Choice[2]) && course.CheckNum(Choice[3]);
-                                if (!fg) System.out.println("Input illegal.");
+                                if (!fg) System.out.println(Error + errorOut);
                                 else {
                                     int N = Integer.parseInt(Choice[2]);
                                     int M = Integer.parseInt(Choice[3]);
                                     while (true) {
                                         if (N <= 0 || ((N - 1) * M) >= studentList.size()) {
-                                            System.out.println("Record does not exist.");
+                                            System.out.println(Error + "Record does not exist.");
                                         }
                                         System.out.println("Page:" + N);
                                         int End = N * M < studentList.size() ? N * M : studentList.size();
@@ -48,20 +50,20 @@ public class Test {
                                         else if (Instruction.equals("q")) break;
                                         else if (Instruction.equals("QUIT")) return;
                                         else {
-                                            System.out.println("Input illegal.");
+                                            System.out.println(Error + errorOut);
                                             break;
                                         }
                                     }
                                 }
                             }catch (WrongInputException e) {
-                                System.out.println(e.getMessage());
+                                System.out.println(Error + e.getMessage());
                             }
 
                         }
                     }
                     else if (Content.equals("back")) break;
                     else if (Content.equals("QUIT")) return;
-                    else System.out.println("Input illegal.");
+                    else System.out.println(Error + errorOut);
                 }
             }
             else if (Choice[0].equals("login")) {
@@ -95,7 +97,7 @@ public class Test {
                                 }
                                 while (true) {
                                     if(N <= 0 || ((N - 1) * M) >= list.size()) {
-                                        System.out.println("Course does not exist.");
+                                        System.out.println(Error + "Course does not exist.");
                                         break;
                                     }
                                     System.out.println("Page:"+N);
@@ -107,14 +109,14 @@ public class Test {
                                     else if(Guide.equals("q")) break;
                                     else if (Guide.equals("QUIT")) return;
                                     else {
-                                        System.out.println("Input illegal.");
+                                        System.out.println(Error + errorOut);
                                         break;
                                     }
                                 }
                             }
                         }
                         else if (Choice[0].equals("clist")) {
-                            if (Choice.length != 4) System.out.println("Input illegal.");
+                            if (Choice.length != 4) System.out.println(Error + errorOut);
                             else {
                                 try {
                                     Course lesson = courseList.getCourseById(Choice[1]);
@@ -122,43 +124,39 @@ public class Test {
                                     Collections.sort(studentList);
                                     Course course = new Course();
                                     boolean fg = course.CheckNum(Choice[2]) && course.CheckNum(Choice[3]) && ans instanceof Teacher;
-                                    if (fg == false) System.out.println("Input illegal.");
+                                    if (!fg) System.out.println(Error + errorOut);
                                     else {
                                         int N = Integer.parseInt(Choice[2]);
                                         int M = Integer.parseInt(Choice[3]);
-                                        if (N < 0 || ((N - 1) * M) >= studentList.size()) {
-                                            System.out.println("Record does not exist.");
-                                        } else {
-                                            while (true) {
-                                                if (N < 0 || ((N - 1) * M) >= studentList.size()) {
-                                                    System.out.println("Record does not exist.");
-                                                }
-                                                System.out.println("Page:" + N);
-                                                int End = N * M < studentList.size() ? N * M : studentList.size();
-                                                OutPut.PrintSelectPerson(studentList, (N - 1) * M, End);
-                                                String Instruction = reader.nextLine();
-                                                if (Instruction.equals("n")) N++;
-                                                else if (Instruction.equals("l")) N--;
-                                                else if (Instruction.equals("q")) break;
-                                                else if (Instruction.equals("QUIT")) return;
-                                                else {
-                                                    System.out.println("Input illegal.");
-                                                    break;
-                                                }
+                                        while (true) {
+                                            if (N <= 0 || ((N - 1) * M) >= studentList.size()) {
+                                                System.out.println(Error + "Record does not exist.");
+                                            }
+                                            System.out.println("Page:" + N);
+                                            int End = N * M < studentList.size() ? N * M : studentList.size();
+                                            OutPut.PrintSelectPerson(studentList, (N - 1) * M, End);
+                                            String Instruction = reader.nextLine();
+                                            if (Instruction.equals("n")) N++;
+                                            else if (Instruction.equals("l")) N--;
+                                            else if (Instruction.equals("q")) break;
+                                            else if (Instruction.equals("QUIT")) return;
+                                            else {
+                                                System.out.println(Error + errorOut);
+                                                break;
                                             }
                                         }
                                     }
                                 }catch (WrongInputException e){
-                                    System.out.println(e.getMessage());
+                                    System.out.println(Error + e.getMessage());
                                 }
                             }
                         }
                         else if (Choice[0].equals("getc")) {
-                            if (Choice.length != 2) System.out.println("Input illegal.");
+                            if (Choice.length != 2) System.out.println(Error + errorOut);
                             else OutPut.GetCourse(Choice[1], ans);
                         }
                         else if (Choice[0].equals("dropc")) {
-                            if (Choice.length != 2) System.out.println("Input illegal.");
+                            if (Choice.length != 2) System.out.println(Error + errorOut);
                             else OutPut.DropCourse(Choice[1], ans);
                         }
                         else if (Choice[0].equals("DROPOUT")) {
@@ -167,12 +165,12 @@ public class Test {
                         }
                         else if (Content.equals("back")) break;
                         else if (Content.equals("QUIT")) return;
-                        else System.out.println("Input illegal.");
+                        else System.out.println(Error + errorOut);
                     }
                 }
             }
             else if (Content.equals("QUIT")) return;
-            else System.out.println("Input illegal.");
+            else System.out.println(Error + errorOut);
         }
     }
 }
